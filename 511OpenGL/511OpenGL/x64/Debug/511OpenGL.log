@@ -1,0 +1,4 @@
+﻿  511OpenGL.vcxproj -> C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\x64\Debug\511OpenGL.exe
+  The system cannot execute the specified program.
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(166,5): error MSB3073: The command "C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\Dependencies\freeglut\bin\x64\freeglut.dll C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\x64\Debug\
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(166,5): error MSB3073: :VCEnd" exited with code 9020.
