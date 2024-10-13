@@ -231,7 +231,7 @@ void drawBody()
 
 	glPushMatrix();
 	glScalef(robotBodyWidth, robotBodyLength, robotBodyDepth);
-	glutSolidCube(1.0);
+	glutSolidCube(1.0); 
 	glPopMatrix();
 }
 
