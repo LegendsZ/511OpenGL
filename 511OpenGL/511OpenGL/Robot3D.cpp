@@ -36,6 +36,14 @@ float stanchionRadius = 0.1*robotBodyDepth;
 float baseWidth = 2 * robotBodyWidth;
 float baseLength = 0.25*stanchionLength;
 
+//camera vars
+bool firstTimeMouseMovement = true;
+int previousX = 0;
+int previousY = 0;
+float yaw = 0.0;
+float pitch = 0.0;
+VECTOR3D rotateAngle = VECTOR3D(0.0, 0.0, 0.0);
+
 // Control Robot body rotation on base
 float robotAngle = 0.0;
 
@@ -196,6 +204,7 @@ void display(void)
 	// Create Viewing Matrix V
 	// Set up the camera at position (0, 6, 22) looking at the origin, up along positive y axis
 	Camera::camera->look();
+	//printVECTOR3D(Camera::camera->center);
 	//gluLookAt(0.0, 6.0, 22.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
 	// Draw Robot
@@ -579,7 +588,8 @@ void mouse(int button, int state, int x, int y)
 	default:
 		break;
 	}
-
+	previousX = x;
+	previousY = y;
 	glutPostRedisplay();   // Trigger a window redisplay
 }
 
@@ -589,9 +599,34 @@ void mouseMotionHandler(int xMouse, int yMouse)
 {
 	if (currentButton == GLUT_LEFT_BUTTON)
 	{
-		;
-	}
+		if (firstTimeMouseMovement) {
+			previousX = xMouse;
+			previousY = yMouse;
+			firstTimeMouseMovement = false;
+			//return;
+		}
+		float xoffset = (xMouse - previousX) * 0.05;
+		float yoffset = (previousY - yMouse) * 0.05;
 
+		previousX = xMouse;
+		previousY = yMouse;
+
+		yaw += xoffset;
+		pitch -= yoffset;
+
+		if (pitch > 89.0f)
+			pitch = 89.0f;
+		if (pitch < -89.0f)
+			pitch = -89.0f;
+
+		std::cout << "Yaw: " << yaw << ", Pitch: " << pitch << std::endl;
+
+		rotateAngle.x = cos(yaw) * cos(pitch);
+		rotateAngle.y = sin(pitch);
+		rotateAngle.z = sin(yaw) * cos(pitch);
+		rotateAngle.Normalize();
+		*Camera::camera->center = *Camera::camera->eye + rotateAngle;
+	}
 	glutPostRedisplay();   // Trigger a window redisplay
 }
 
