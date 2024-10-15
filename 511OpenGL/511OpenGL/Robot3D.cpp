@@ -10,6 +10,8 @@
 #include <vector>
 #include "VECTOR3D.h"
 #include "QuadMesh.h"
+#include "Camera.h"
+
 
 const int vWidth  = 650;    // Viewport width in pixels
 const int vHeight = 500;    // Viewport height in pixels
@@ -33,6 +35,9 @@ float stanchionLength = robotBodyLength;
 float stanchionRadius = 0.1*robotBodyDepth;
 float baseWidth = 2 * robotBodyWidth;
 float baseLength = 0.25*stanchionLength;
+
+//camera variables
+VECTOR3D refToCam;
 
 // Control Robot body rotation on base
 float robotAngle = 0.0;
@@ -175,6 +180,11 @@ void initOpenGL(int w, int h)
 	float shininess = 0.2;
 	groundMesh->SetMaterial(ambient, diffuse, specular, shininess);
 
+	VECTOR3D eye = VECTOR3D(0.0f, 6.0f, 22.0f);
+	VECTOR3D center = VECTOR3D(0.0f, 0.0f, 0.0f);
+	VECTOR3D up = VECTOR3D(0.0f, 1.0f, 0.0f);
+
+	Camera::makeCamera(&eye, &center, &up);
 }
 
 
@@ -187,7 +197,8 @@ void display(void)
 	glLoadIdentity();
 	// Create Viewing Matrix V
 	// Set up the camera at position (0, 6, 22) looking at the origin, up along positive y axis
-	gluLookAt(0.0, 6.0, 22.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	Camera::camera->look();
+	//gluLookAt(0.0, 6.0, 22.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
 	// Draw Robot
 
@@ -458,8 +469,42 @@ bool stop = false;
 // Callback, handles input from the keyboard, non-arrow keys
 void keyboard(unsigned char key, int x, int y)
 {
+	refToCam = *Camera::camera->center;
+	VECTOR3D u1 = refToCam.CrossProduct(VECTOR3D(0,1.0,0));
+	VECTOR3D u2 = refToCam.CrossProduct(u1);
+	refToCam.Normalize();
+	refToCam *= 0.05;
+	u1.Normalize();
+	u1 *= 0.05;
+	u2.Normalize();
+	u2 *= 0.05;
+
 	switch (key)
 	{
+	case 'w':
+		*Camera::camera->center += refToCam;
+		break;
+	case 's':
+		*Camera::camera->center -= refToCam;
+		break;
+	case 'a':
+		*Camera::camera->eye -= u1;
+		break;
+	case 'd':
+		*Camera::camera->eye += u1;
+		break;
+	case 'q':
+		*Camera::camera->eye += u2;
+		break;
+	case 'e':
+		*Camera::camera->eye -= u2;
+		break;
+	case 'z':
+		shoulderAngle += 2.0;
+		break;
+	case 'Z':
+		shoulderAngle -= 2.0;
+		break;
 	case 't':
 
 		break;
@@ -469,22 +514,16 @@ void keyboard(unsigned char key, int x, int y)
 	case 'R':
 		robotAngle -= 2.0;
 		break;
-	case 'a':
-		shoulderAngle += 2.0;
-		break;
-	case 'A':
-		shoulderAngle -= 2.0;
-		break;
 	case 'g':
 		gunAngle += 2.0;
 		break;
 	case 'G':
 		gunAngle -= 2.0;
 		break;
-	case 's':
+	case 'x':
 		glutTimerFunc(10, animationHandler, 0);
 		break;
-	case 'S':
+	case 'X':
 		stop = true;
 		break;
 	}
