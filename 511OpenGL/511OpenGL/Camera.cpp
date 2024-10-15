@@ -6,5 +6,4 @@ void Camera::makeCamera(VECTOR3D* eye, VECTOR3D* center, VECTOR3D* up) {
 	if (!camera) {
 		camera = new Camera(eye, center, up);
 	}
-	std::cout << "eye: " << eye->x << " " << eye->y << " " << eye->z << std::endl;
 }

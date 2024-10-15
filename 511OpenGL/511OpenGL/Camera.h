@@ -4,7 +4,7 @@
 #include "VECTOR3D.h"
 #include <iostream>
 
-class Camera { //singleton impl
+class Camera {
 public:
 	static Camera* camera;
 	VECTOR3D* eye;
@@ -13,7 +13,6 @@ public:
 
 	void look() {
 		//gluLookAt(eye->x, eye->y, eye->z, center->x + eye->x, center->y + eye->y, center->z + eye->z, up->x, up->y, up->z);
-		std::cout << "eye: " << eye->x << " " << eye->y << " " << eye->z << std::endl;
 		gluLookAt(eye->x, eye->y, eye->z, center->x, center->y, center->z, up->x, up->y, up->z);
 	}
 
@@ -21,8 +20,6 @@ public:
 
 private:
 	Camera(VECTOR3D* eye, VECTOR3D* center, VECTOR3D* up) :
-		eye(eye), center(center), up(up)
-	{
-	}
+		eye(eye), center(center), up(up) {}
 };
 

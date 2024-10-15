@@ -36,9 +36,6 @@ float stanchionRadius = 0.1*robotBodyDepth;
 float baseWidth = 2 * robotBodyWidth;
 float baseLength = 0.25*stanchionLength;
 
-//camera variables
-VECTOR3D refToCam;
-
 // Control Robot body rotation on base
 float robotAngle = 0.0;
 
@@ -108,6 +105,7 @@ void drawHead();
 void drawLowerBody();
 void drawLeftArm();
 void drawRightArm();
+void printVECTOR3D(VECTOR3D* in);
 
 int main(int argc, char **argv)
 {
@@ -180,11 +178,11 @@ void initOpenGL(int w, int h)
 	float shininess = 0.2;
 	groundMesh->SetMaterial(ambient, diffuse, specular, shininess);
 
-	VECTOR3D eye = VECTOR3D(0.0f, 6.0f, 22.0f);
-	VECTOR3D center = VECTOR3D(0.0f, 0.0f, 0.0f);
-	VECTOR3D up = VECTOR3D(0.0f, 1.0f, 0.0f);
+	VECTOR3D* eye = new VECTOR3D(0.0f, 6.0f, 22.0f);
+	VECTOR3D* center = new VECTOR3D(0.0f, 0.0f, -1.0f);
+	VECTOR3D* up = new VECTOR3D(0.0f, 1.0f, 0.0f);
 
-	Camera::makeCamera(&eye, &center, &up);
+	Camera::makeCamera(eye, center, up);
 }
 
 
@@ -469,35 +467,33 @@ bool stop = false;
 // Callback, handles input from the keyboard, non-arrow keys
 void keyboard(unsigned char key, int x, int y)
 {
-	refToCam = *Camera::camera->center;
-	VECTOR3D u1 = refToCam.CrossProduct(VECTOR3D(0,1.0,0));
-	VECTOR3D u2 = refToCam.CrossProduct(u1);
-	refToCam.Normalize();
-	refToCam *= 0.05;
-	u1.Normalize();
-	u1 *= 0.05;
-	u2.Normalize();
-	u2 *= 0.05;
+	VECTOR3D forward = (*(Camera::camera->center) - *(Camera::camera->eye)); // Direction the camera is facing
+	forward.Normalize();
+	VECTOR3D right = (forward.CrossProduct(*Camera::camera->up)); // Right direction
+	right.Normalize();
+	float speed = 0.1f;
 
 	switch (key)
 	{
 	case 'w':
-		*Camera::camera->center += refToCam;
+		*Camera::camera->eye += forward * speed;
+		*Camera::camera->center += forward * speed;
 		break;
 	case 's':
-		*Camera::camera->center -= refToCam;
+		*Camera::camera->eye -= forward * speed;
+		*Camera::camera->center -= forward * speed;
 		break;
 	case 'a':
-		*Camera::camera->eye -= u1;
+		*Camera::camera->eye -= right * speed;
+		*Camera::camera->center -= right * speed;
 		break;
 	case 'd':
-		*Camera::camera->eye += u1;
+		*Camera::camera->eye += right * speed;
+		*Camera::camera->center += right * speed;
 		break;
 	case 'q':
-		*Camera::camera->eye += u2;
 		break;
 	case 'e':
-		*Camera::camera->eye -= u2;
 		break;
 	case 'z':
 		shoulderAngle += 2.0;
@@ -527,7 +523,6 @@ void keyboard(unsigned char key, int x, int y)
 		stop = true;
 		break;
 	}
-
 	glutPostRedisplay();   // Trigger a window redisplay
 }
 
@@ -600,3 +595,6 @@ void mouseMotionHandler(int xMouse, int yMouse)
 	glutPostRedisplay();   // Trigger a window redisplay
 }
 
+void printVECTOR3D(VECTOR3D* in) {
+	std::cout << in->x << " " << in->y << " " << in->z << std::endl;
+}

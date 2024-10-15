@@ -1,5 +1,4 @@
-﻿  Camera.cpp
-  Robot3D.cpp
+﻿  Robot3D.cpp
 C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(24,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(27,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(28,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
@@ -8,17 +7,13 @@ C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(32,1
 C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(33,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(35,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(37,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(180,18): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(289,37): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(293,54): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(293,34): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(293,14): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(310,15): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(377,36): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(476,14): warning C4305: 'argument': truncation from 'double' to 'const float'
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(478,8): warning C4305: 'argument': truncation from 'double' to 'const float'
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(480,8): warning C4305: 'argument': truncation from 'double' to 'const float'
-  Generating Code...
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(178,18): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(287,37): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(291,54): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(291,34): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(291,14): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(308,15): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(375,36): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
   511OpenGL.vcxproj -> C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\x64\Debug\511OpenGL.exe
   'pwsh.exe' is not recognized as an internal or external command,
   operable program or batch file.
