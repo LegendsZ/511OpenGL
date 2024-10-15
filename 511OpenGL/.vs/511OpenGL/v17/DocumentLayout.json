@@ -11,19 +11,15 @@
       "RelativeMoniker": "D:1:0:{140F4E45-A8F0-457E-B45D-044AF55C1A83}|511OpenGL\\511OpenGL.vcxproj|solutionrelative:511OpenGL\\Robot3D.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{140F4E45-A8F0-457E-B45D-044AF55C1A83}|511OpenGL\\511OpenGL.vcxproj|C:\\Users\\WINDOWS\\Documents\\GitHub\\511OpenGL\\511OpenGL\\511OpenGL\\Camera.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{140F4E45-A8F0-457E-B45D-044AF55C1A83}|511OpenGL\\511OpenGL.vcxproj|solutionrelative:511OpenGL\\Camera.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{140F4E45-A8F0-457E-B45D-044AF55C1A83}|511OpenGL\\511OpenGL.vcxproj|C:\\Users\\WINDOWS\\Documents\\GitHub\\511OpenGL\\511OpenGL\\511OpenGL\\Camera.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{140F4E45-A8F0-457E-B45D-044AF55C1A83}|511OpenGL\\511OpenGL.vcxproj|solutionrelative:511OpenGL\\Camera.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\WINDOWS\\Downloads\\Zeppelin3d.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{140F4E45-A8F0-457E-B45D-044AF55C1A83}|511OpenGL\\511OpenGL.vcxproj|C:\\Users\\WINDOWS\\Documents\\GitHub\\511OpenGL\\511OpenGL\\511OpenGL\\Camera.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{140F4E45-A8F0-457E-B45D-044AF55C1A83}|511OpenGL\\511OpenGL.vcxproj|solutionrelative:511OpenGL\\Camera.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{140F4E45-A8F0-457E-B45D-044AF55C1A83}|511OpenGL\\511OpenGL.vcxproj|C:\\Users\\WINDOWS\\Documents\\GitHub\\511OpenGL\\511OpenGL\\511OpenGL\\VECTOR3D.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{140F4E45-A8F0-457E-B45D-044AF55C1A83}|511OpenGL\\511OpenGL.vcxproj|solutionrelative:511OpenGL\\VECTOR3D.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -32,7 +28,7 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 303,
+          "DockedWidth": 279,
           "SelectedChildIndex": 6,
           "Children": [
             {
@@ -49,7 +45,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "Camera.cpp",
               "DocumentMoniker": "C:\\Users\\WINDOWS\\Documents\\GitHub\\511OpenGL\\511OpenGL\\511OpenGL\\Camera.cpp",
               "RelativeDocumentMoniker": "511OpenGL\\Camera.cpp",
@@ -61,7 +57,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Camera.h",
               "DocumentMoniker": "C:\\Users\\WINDOWS\\Documents\\GitHub\\511OpenGL\\511OpenGL\\511OpenGL\\Camera.h",
               "RelativeDocumentMoniker": "511OpenGL\\Camera.h",
@@ -69,12 +65,11 @@
               "RelativeToolTip": "511OpenGL\\Camera.h",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-10-15T00:37:46.218Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-15T00:37:46.218Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Zeppelin3d.cpp",
               "DocumentMoniker": "C:\\Users\\WINDOWS\\Downloads\\Zeppelin3d.cpp",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\Downloads\\Zeppelin3d.cpp",
@@ -82,8 +77,7 @@
               "RelativeToolTip": "..\\..\\..\\..\\Downloads\\Zeppelin3d.cpp",
               "ViewState": "AgIAAPYBAAAAAAAAAAAwwM4AAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-10-12T16:34:38.128Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-12T16:34:38.128Z"
             },
             {
               "$type": "Document",
@@ -93,7 +87,7 @@
               "RelativeDocumentMoniker": "511OpenGL\\Robot3D.cpp",
               "ToolTip": "C:\\Users\\WINDOWS\\Documents\\GitHub\\511OpenGL\\511OpenGL\\511OpenGL\\Robot3D.cpp",
               "RelativeToolTip": "511OpenGL\\Robot3D.cpp",
-              "ViewState": "AgIAAFICAAAAAAAAAAAqwG8CAAASAAAAAAAAAA==",
+              "ViewState": "AgIAABgBAAAAAAAAAAAewCQBAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-10-12T18:13:17.698Z",
               "EditorCaption": ""
@@ -101,7 +95,7 @@
           ]
         },
         {
-          "DockedWidth": 97,
+          "DockedWidth": 121,
           "SelectedChildIndex": 0,
           "Children": [
             {
@@ -112,22 +106,10 @@
               "RelativeDocumentMoniker": "511OpenGL\\Robot3D.cpp",
               "ToolTip": "C:\\Users\\WINDOWS\\Documents\\GitHub\\511OpenGL\\511OpenGL\\511OpenGL\\Robot3D.cpp",
               "RelativeToolTip": "511OpenGL\\Robot3D.cpp",
-              "ViewState": "AgIAAMYAAAAAAAAAAAAAAM4AAAADAAAAAAAAAA==",
+              "ViewState": "AgIAABwAAAAAAAAAAAAewC0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-10-12T16:42:13.233Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "VECTOR3D.h",
-              "DocumentMoniker": "C:\\Users\\WINDOWS\\Documents\\GitHub\\511OpenGL\\511OpenGL\\511OpenGL\\VECTOR3D.h",
-              "RelativeDocumentMoniker": "511OpenGL\\VECTOR3D.h",
-              "ToolTip": "C:\\Users\\WINDOWS\\Documents\\GitHub\\511OpenGL\\511OpenGL\\511OpenGL\\VECTOR3D.h",
-              "RelativeToolTip": "511OpenGL\\VECTOR3D.h",
-              "ViewState": "AgIAABgAAAAAAAAAAAAAABQAAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-10-15T16:15:37.867Z"
             }
           ]
         }

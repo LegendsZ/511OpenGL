@@ -44,6 +44,12 @@ float yaw = 0.0;
 float pitch = 0.0;
 VECTOR3D rotateAngle = VECTOR3D(0.0, 0.0, 0.0);
 
+//joints control
+bool shoulders = false;
+bool hip = false;
+bool knees = false;
+bool gunSpinStop = false;
+
 // Control Robot body rotation on base
 float robotAngle = 0.0;
 
@@ -113,6 +119,7 @@ void drawHead();
 void drawLowerBody();
 void drawLeftArm();
 void drawRightArm();
+void gunSpinnerHandler(int param);
 void printVECTOR3D(VECTOR3D* in);
 
 int main(int argc, char **argv)
@@ -436,7 +443,7 @@ void drawRightArm()
 	glPushMatrix();
 	// rotate gun
 	//glTranslatef(-(0.5*robotBodyWidth + 0.5*upperArmWidth), -(0.5*upperArmLength), 0.0);
-	//glRotatef(gunAngle, 1.0, 0.0, 0.0);
+	glRotatef(gunAngle, 1.0, 0.0, 0.0);
 	//glTranslatef((0.5*robotBodyWidth + 0.5*upperArmWidth), (0.5*upperArmLength ), 0.0);
 	
 	// Position gun with respect to parent arm 
@@ -500,18 +507,25 @@ void keyboard(unsigned char key, int x, int y)
 		*Camera::camera->eye += right * speed;
 		*Camera::camera->center += right * speed;
 		break;
-	case 'q':
+	case 'q': // Move up?
 		break;
-	case 'e':
+	case 'e': // Move down?
 		break;
-	case 'z':
-		shoulderAngle += 2.0;
+	case 'j':
+		shoulders = true;
+		hip = false;
+		knees = false;
+		//shoulderAngle += 2.0;
 		break;
-	case 'Z':
-		shoulderAngle -= 2.0;
+	case 'k':
+		shoulders = false;
+		hip = false;
+		knees = true;
 		break;
-	case 't':
-
+	case 'h':
+		shoulders = false;
+		hip = true;
+		knees = false;
 		break;
 	case 'r':
 		robotAngle += 2.0;
@@ -519,24 +533,32 @@ void keyboard(unsigned char key, int x, int y)
 	case 'R':
 		robotAngle -= 2.0;
 		break;
-	case 'g':
-		gunAngle += 2.0;
+	case 'c':
+		glutTimerFunc(10, gunSpinnerHandler, 0);
+		gunSpinStop = false;
 		break;
-	case 'G':
-		gunAngle -= 2.0;
+	case 'C':
+		gunSpinStop = true;
 		break;
 	case 'x':
-		glutTimerFunc(10, animationHandler, 0);
+		
 		break;
 	case 'X':
-		stop = true;
+		
 		break;
 	}
 	glutPostRedisplay();   // Trigger a window redisplay
 }
 
+void gunSpinnerHandler(int param) {
+	if (!gunSpinStop) {
+		gunAngle += 2.0;
+		glutPostRedisplay();
+		glutTimerFunc(10, gunSpinnerHandler, 0);
+	}
+}
 
-void animationHandler(int param)
+void animationHandler(int param) //for walking animation (1 leg step?)
 {
 	if (!stop)
 	{
@@ -556,6 +578,19 @@ void functionKeys(int key, int x, int y)
 	{
 
 	}
+	else if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
+		int sign = (key == GLUT_KEY_DOWN) ? 1 : -1;
+		if (shoulders) {
+			shoulderAngle += sign * 2.0;
+		}
+		else if (hip) {
+			//hipAngle += sign * 2.0;
+		}
+		else if (knees) {
+			//kneeAngle += sign * 2.0;
+		}
+	}
+
 	// Do transformations with arrow keys
 	//else if (...)   // GLUT_KEY_DOWN, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_LEFT
 	//{
@@ -603,7 +638,7 @@ void mouseMotionHandler(int xMouse, int yMouse)
 			previousX = xMouse;
 			previousY = yMouse;
 			firstTimeMouseMovement = false;
-			//return;
+			return;
 		}
 		float xoffset = (xMouse - previousX) * 0.05;
 		float yoffset = (previousY - yMouse) * 0.05;
@@ -618,8 +653,6 @@ void mouseMotionHandler(int xMouse, int yMouse)
 			pitch = 89.0f;
 		if (pitch < -89.0f)
 			pitch = -89.0f;
-
-		std::cout << "Yaw: " << yaw << ", Pitch: " << pitch << std::endl;
 
 		rotateAngle.x = cos(yaw) * cos(pitch);
 		rotateAngle.y = sin(pitch);

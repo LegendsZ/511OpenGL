@@ -12,6 +12,11 @@ SPECIAL FEATURE: dynamic 3d camera
 w a s d keyboard inputs control moving in the 3d space and holding left click with mouse and moving mouse will control yaw/pitch (rotation) of camera
 furthermore:
 
-
+Controls for spinning:
+'c' starts spinning the cannon along its own length.
+'C' stop spinning of the cannon.
+'k' selects knee angle to be controlled
+'h' selects hip angle to be controlled
+'j' selects shoulder angle to be controlled
 
 Special notes:
