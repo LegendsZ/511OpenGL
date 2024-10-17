@@ -24,13 +24,14 @@ float robotBodyDepth = 6.0;
 float headWidth = 0.4*robotBodyWidth;
 float headLength = headWidth;
 float headDepth = headWidth;
+float eyeRadius = 0.1 * headWidth;
 float upperArmLength = robotBodyLength*0.75;
 float upperArmWidth = 0.125*robotBodyWidth;
 float gunLength = upperArmLength / 4.0;
 float gunWidth = upperArmWidth;
 float gunDepth = upperArmWidth;
-float legLength = robotBodyLength * 0.75;
-float legWidth = 0.125 * robotBodyWidth;
+float legLength = robotBodyLength * 1.0;
+float legWidth = 0.2 * robotBodyWidth;
 float stanchionLength = robotBodyLength;
 float stanchionRadius = 0.1*robotBodyDepth;
 float baseWidth = 2 * robotBodyWidth;
@@ -71,7 +72,7 @@ GLfloat robotArm_mat_diffuse[] = { 0.0f,0.0f,0.0f,1.0f };
 GLfloat robotArm_mat_shininess[] = { 32.0F };
 
 GLfloat gun_mat_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-GLfloat gun_mat_diffuse[] = { 0.01f,0.0f,0.01f,0.01f };
+GLfloat gun_mat_diffuse[] = { 1.0f,0.6f,0.2f,0.01f };
 GLfloat gun_mat_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 GLfloat gun_mat_shininess[] = { 100.0F };
 
@@ -115,7 +116,6 @@ void functionKeys(int key, int x, int y);
 void animationHandler(int param);
 void drawRobot();
 void drawBody();
-void drawHead();
 void drawLowerBody();
 void drawLeftArm();
 void drawRightArm();
@@ -237,12 +237,9 @@ void drawRobot()
 	glRotatef(robotAngle, 0.0, 1.0, 0.0);
 
 	drawBody();
-	//drawHead();
 	drawLeftArm();
 	drawRightArm();
-	glPopMatrix();
 	
-	// don't want to spin fixed base in this example
 	drawLowerBody();
 
 	glPopMatrix();
@@ -264,6 +261,20 @@ void drawBody()
 	// solid sphere
 	glutSolidSphere(1.0, 50, 50);
 
+	glPushMatrix();
+	//draw eyes
+	glTranslatef(-0.4f, 0.6f, 0.75f);
+	glRotatef(90, 0.0, 0.0, 1.0);
+	glScalef(0.25f, 0.6f, 0.4f); // scale to make an oval shape
+	GLfloat eyes[] = { 1.0f, 1.0f, 1.0f, 1.0f }; //white
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, eyes);
+	glutSolidSphere(eyeRadius, 20, 20);
+
+	glTranslatef(0.0f,-1.4f, 0.0f);
+	glutSolidSphere(eyeRadius, 20, 20);
+	glPopMatrix();
+
+
 	// draw jacket
 	GLfloat jacket[] = { 0.7f,0.0f,0.0f,1.0f };
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, jacket);
@@ -275,37 +286,16 @@ void drawBody()
 	GLfloat belt[] = { 0.0f,0.0f,0.0f,1.0f };
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, belt);
 	glTranslatef(0.0f, -0.55f, 0.0f);
-	glScalef(0.8f, .2f, 1.2f);
+	glScalef(0.9f, .1f, 1.0f);
 	glutSolidSphere(1.1, 10, 10);
 
 	// draw belt buckle
 	GLfloat buckle[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, buckle);
 	glPushMatrix();
-	glTranslatef(0.0f, 0.4f, 1.1f); // position the buckle on the center of the belt
+	glTranslatef(0.0f, 0.0f, 1.05f); // position the buckle on the center of the belt
 	glScalef(0.25f, 0.65f, 0.05f); // scale to make an oval shape
 	glutSolidSphere(1.0, 20, 20);
-	glPopMatrix();
-
-	glPopMatrix();
-}
-
-void drawHead()
-{
-	// Set robot material properties per body part. Can have seperate material properties for each part
-	glMaterialfv(GL_FRONT, GL_AMBIENT, robotBody_mat_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, robotBody_mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, robotBody_mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, robotBody_mat_shininess);
-
-	glPushMatrix();
-	// Position head with respect to parent (body)
-	glTranslatef(0, 0.5*robotBodyLength+0.5*headLength, 0); // this will be done last
-	
-	// Build Head
-	glPushMatrix();
-	glScalef(0.4*robotBodyWidth, 0.4*robotBodyWidth, 0.4*robotBodyWidth);
-	glutSolidCube(1.0);
 	glPopMatrix();
 
 	glPopMatrix();
@@ -320,50 +310,22 @@ void drawLowerBody()
 
 	glPushMatrix();
 
-	// Position stanchion and base with respect to body
-	glTranslatef(-(0.25 * robotBodyWidth), -robotBodyLength/2, 0.0); // this will be done last
+	glTranslatef(-(0.3 * robotBodyWidth), -robotBodyLength/2, 0.0); // this will be done last
 	//glTranslatef(0.5 * robotBodyWidth + 0.5 * upperArmWidth, robotBodyLength / 4.0f, 0.0);
 	glRotatef(90, 1.0, 0.0, 0.0);
-	// Draw cylinder for the arm
+	// Draw cylinder for the leg
 	GLUquadric* quad = gluNewQuadric();
 	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength/2, 20, 20);
 	gluDeleteQuadric(quad);
 
-	glTranslatef(0, -legLength / 2, 5.0); // this will be done last
+	//glTranslatef(0, -legLength / 2, 5.0); // this will be done last
+	glTranslatef(legLength / 2,0, 0); // this will be done last
 	//glTranslatef(0.5 * robotBodyWidth + 0.5 * upperArmWidth, robotBodyLength / 4.0f, 0.0);
 	//glRotatef(90, 1.0, 0.0, 0.0);
-	// Draw cylinder for the arm
+	// Draw cylinder for the leg
 	quad = gluNewQuadric();
 	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength / 2, 20, 20);
 	gluDeleteQuadric(quad);
-
-
-	// Position stanchion and base with respect to body
-	//glTranslatef((0.5 * robotBodyWidth),0.0, 0.0); // this will be done last
-	////glTranslatef(0.5 * robotBodyWidth + 0.5 * upperArmWidth, robotBodyLength / 4.0f, 0.0);
-	////glRotatef(90, 1.0, 0.0, 0.0);
-	//// Draw cylinder for the arm
-	//quad = gluNewQuadric();
-	//gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength/2, 20, 20);
-	//gluDeleteQuadric(quad);
-
-	/*
-	// stanchion
-	glPushMatrix();
-	glScalef(stanchionRadius, stanchionLength, stanchionRadius);
-	glRotatef(-90.0, 1.0, 0.0, 0.0);
-	gluCylinder(gluNewQuadric(), 1.0, 1.0, 1.0, 20, 10);
-	glPopMatrix();
-
-	// base
-	glPushMatrix();
-	// Position base with respect to parent stanchion
-	glTranslatef(0.0, -0.25*stanchionLength, 0.0);
-	// Build base
-	glScalef(baseWidth, baseLength, baseWidth);
-	glRotatef(-90.0, 1.0, 0.0, 0.0);
-	glutSolidCube(1.0);
-	glPopMatrix();*/
 
 	glPopMatrix();
 }
