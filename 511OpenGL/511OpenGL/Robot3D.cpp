@@ -121,6 +121,7 @@ void drawLeftArm();
 void drawRightArm();
 void gunSpinnerHandler(int param);
 void printVECTOR3D(VECTOR3D* in);
+void cleanUp();
 
 int main(int argc, char **argv)
 {
@@ -145,9 +146,14 @@ int main(int argc, char **argv)
 	// Start event loop, never returns
 	glutMainLoop();
 
+	cleanUp();
 	return 0;
 }
 
+//clean up program
+void cleanUp() {
+	delete groundMesh; // Freeing the allocated ground mesh
+}
 
 // Set up OpenGL. For viewport and projection setup see reshape(). 
 void initOpenGL(int w, int h)
@@ -197,6 +203,7 @@ void initOpenGL(int w, int h)
 	VECTOR3D* center = new VECTOR3D(0.0f, 0.0f, -1.0f);
 	VECTOR3D* up = new VECTOR3D(0.0f, 1.0f, 0.0f);
 
+	// Set up the camera at position (0, 6, 22) looking at the origin, up along positive y axis
 	Camera::makeCamera(eye, center, up);
 }
 
@@ -208,17 +215,9 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glLoadIdentity();
-	// Create Viewing Matrix V
-	// Set up the camera at position (0, 6, 22) looking at the origin, up along positive y axis
 	Camera::camera->look();
-	//printVECTOR3D(Camera::camera->center);
-	//gluLookAt(0.0, 6.0, 22.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
 	// Draw Robot
-
-	// Apply modelling transformations M to move robot
-	// Current transformation matrix is set to IV, where I is identity matrix
-	// CTM = IV
 	drawRobot();
 
 	// Draw ground
