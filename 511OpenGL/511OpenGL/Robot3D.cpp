@@ -16,8 +16,6 @@
 const int vWidth  = 650;    // Viewport width in pixels
 const int vHeight = 500;    // Viewport height in pixels
 
-// Note how everything depends on robot body dimensions so that can scale entire robot proportionately
-// just by changing robot body scale
 float robotBodyWidth = 8.0;
 float robotBodyLength = 10.0;
 float robotBodyDepth = 6.0;
@@ -32,10 +30,6 @@ float gunWidth = upperArmWidth;
 float gunDepth = upperArmWidth;
 float legLength = robotBodyLength * 1.0;
 float legWidth = 0.2 * robotBodyWidth;
-float stanchionLength = robotBodyLength;
-float stanchionRadius = 0.1*robotBodyDepth;
-float baseWidth = 2 * robotBodyWidth;
-float baseLength = 0.25*stanchionLength;
 
 //camera vars
 bool firstTimeMouseMovement = true;
@@ -65,28 +59,27 @@ float rotationSpeed = 2.0;
 bool firstStep = true;
 bool leftLegWalk = true;
 
-// Lighting/shading and material properties for robot - upcoming lecture - just copy for now
-// Robot RGBA material properties (NOTE: we will learn about this later in the semester)
-GLfloat robotBody_mat_ambient[] = { 0.0f,0.0f,0.0f,0.0f };
-GLfloat robotBody_mat_specular[] = { 0.0f,0.0f,0.0f,0.0f };
-GLfloat robotBody_mat_diffuse[] = { 0.7f,0.42f,0.0f,1.0f };
-GLfloat robotBody_mat_shininess[] = { 10.0F };
+// Robot RGBA material properties
+GLfloat killerBean_mat_ambient[] = { 0.0f,0.0f,0.0f,0.0f };
+GLfloat killerBean_mat_specular[] = { 0.0f,0.0f,0.0f,0.0f };
+GLfloat killerBean_mat_diffuse[] = { 0.7f,0.42f,0.0f,1.0f };
+GLfloat killerBean_mat_shininess[] = { 10.0F };
 
 
-GLfloat robotArm_mat_ambient[] = { 0.0f,0.0f,0.0f,0.0f };
-GLfloat robotArm_mat_specular[] = { 0.0f,0.0f,0.0f,0.0f };
-GLfloat robotArm_mat_diffuse[] = { 0.0f,0.0f,0.0f,1.0f };
-GLfloat robotArm_mat_shininess[] = { 32.0F };
+GLfloat killerBeanArm_mat_ambient[] = { 0.0f,0.0f,0.0f,0.0f };
+GLfloat killerBeanArm_mat_specular[] = { 0.0f,0.0f,0.0f,0.0f };
+GLfloat killerBeanArm_mat_diffuse[] = { 0.0f,0.0f,0.0f,1.0f };
+GLfloat killerBeanArm_mat_shininess[] = { 32.0F };
 
 GLfloat gun_mat_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 GLfloat gun_mat_diffuse[] = { 1.0f,0.6f,0.2f,0.01f };
 GLfloat gun_mat_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 GLfloat gun_mat_shininess[] = { 100.0F };
 
-GLfloat robotLowerBody_mat_ambient[] = { 0.25f, 0.25f, 0.25f, 1.0f };
-GLfloat robotLowerBody_mat_specular[] = { 0.774597f, 0.774597f, 0.774597f, 1.0f };
-GLfloat robotLowerBody_mat_diffuse[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-GLfloat robotLowerBody_mat_shininess[] = { 76.8F };
+GLfloat killerBeanLowerBody_mat_ambient[] = { 0.25f, 0.25f, 0.25f, 1.0f };
+GLfloat killerBeanLowerBody_mat_specular[] = { 0.774597f, 0.774597f, 0.774597f, 1.0f };
+GLfloat killerBeanLowerBody_mat_diffuse[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+GLfloat killerBeanLowerBody_mat_shininess[] = { 76.8F };
 
 
 // Light properties
@@ -100,14 +93,8 @@ GLfloat light_ambient[] = { 0.2F, 0.2F, 0.2F, 1.0F };
 // Mouse button
 int currentButton;
 
-// A flat open mesh
+// A flat mesh for ground
 QuadMesh *groundMesh = NULL;
-
-// Structure defining a bounding box, currently unused
-typedef struct BoundingBox {
-    VECTOR3D min;
-	VECTOR3D max;
-} BBox;
 
 // Default Mesh Size
 int meshSize = 16;
@@ -159,9 +146,9 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-//clean up program
+//clean up program /garbage collection
 void cleanUp() {
-	delete groundMesh; // Freeing the allocated ground mesh
+	delete groundMesh; //free groundmesh
 }
 
 // Set up OpenGL. For viewport and projection setup see reshape(). 
@@ -256,10 +243,10 @@ void drawRobot()
 
 void drawBody()
 {
-	glMaterialfv(GL_FRONT, GL_AMBIENT, robotBody_mat_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, robotBody_mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, robotBody_mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, robotBody_mat_shininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, killerBean_mat_ambient);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, killerBean_mat_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, killerBean_mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SHININESS, killerBean_mat_shininess);
 
 	glPushMatrix();
 	glScalef(robotBodyWidth, robotBodyLength, robotBodyDepth);
@@ -310,42 +297,31 @@ void drawBody()
 }
 
 void drawUpperLeg(bool left) {
-	//glPushMatrix();
-	//glScalef(legWidth, legLength, legWidth);
 	glRotatef(left ? hipLAngle : hipRAngle, 1.0, 0.0, 0.0);
-	//glRotatef(90, 1.0, 0.0, 0.0);
 	// Draw cylinder for the upper leg
 	GLUquadric* quad = gluNewQuadric();
 	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength / 2, 20, 20);
 	gluDeleteQuadric(quad);
-	//glutSolidCube(1.0); // Draw upper leg
-	//glPopMatrix();
 }
 
 void drawLowerLeg(bool left) {
-	//glPushMatrix();
-	//glScalef(legWidth, legLength, legWidth);
 	glRotatef(left ? kneeLAngle : kneeRAngle, 1.0, 0.0, 0.0);
-	//glRotatef(90, 1.0, 0.0, 0.0);
 	// Draw cylinder for the lower leg
 	GLUquadric* quad = gluNewQuadric();
 	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength / 2, 20, 20);
 	gluDeleteQuadric(quad);
-	//glutSolidCube(1.0); // Draw lower leg
-	//glPopMatrix();
 }
 
 void drawLowerBody()
 {
-	glMaterialfv(GL_FRONT, GL_AMBIENT, robotLowerBody_mat_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, robotLowerBody_mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, robotLowerBody_mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, robotLowerBody_mat_shininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, killerBeanLowerBody_mat_ambient);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, killerBeanLowerBody_mat_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, killerBeanLowerBody_mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SHININESS, killerBeanLowerBody_mat_shininess);
 
 	//code for rightleg
 	glPushMatrix();
 	glTranslatef(-(0.3 * robotBodyWidth), -robotBodyLength / 2, 0.0); // this will be done last
-	//glTranslatef(-robotBodyWidth / 4.0f, -robotBodyDepth / 2.0f, 0.0f); // Position left leg
 	drawUpperLeg(false); // Draw upper leg
 	glTranslatef(0.0f,0.0f, legLength / 2); // Move down for lower leg
 	drawLowerLeg(false); // Draw lower leg
@@ -354,54 +330,21 @@ void drawLowerBody()
 	//code for leftleg
 	glPushMatrix();
 	glTranslatef(+(0.3 * robotBodyWidth), -robotBodyLength / 2, 0.0); // this will be done last
-	//glTranslatef(robotBodyWidth / 4.0f, -robotBodyDepth / 2.0f, 0.0f); // Position right leg
 	drawUpperLeg(true); // Draw upper leg
 	glTranslatef(0.0f, 0.0f, legLength / 2); // Move down for lower leg
 	drawLowerLeg(true); // Draw lower leg
 	glPopMatrix();
-
-	/*glPushMatrix();
-
-	glTranslatef(-(0.3 * robotBodyWidth), -robotBodyLength/2, 0.0); // this will be done last
-	//glTranslatef(0.5 * robotBodyWidth + 0.5 * upperArmWidth, robotBodyLength / 4.0f, 0.0);
-	glRotatef(90, 1.0, 0.0, 0.0);
-	// Draw cylinder for the leg
-	GLUquadric* quad = gluNewQuadric();
-	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength/2, 20, 20);
-	gluDeleteQuadric(quad);
-
-	//glTranslatef(0, -legLength / 2, 5.0); // this will be done last
-	glTranslatef(legLength / 2,0, 0); // this will be done last
-	//glTranslatef(0.5 * robotBodyWidth + 0.5 * upperArmWidth, robotBodyLength / 4.0f, 0.0);
-	//glRotatef(90, 1.0, 0.0, 0.0);
-	// Draw cylinder for the leg
-	quad = gluNewQuadric();
-	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength / 2, 20, 20);
-	gluDeleteQuadric(quad);
-
-	glPopMatrix();*/
 }
 
 void drawLeftArm()
 {
-	glMaterialfv(GL_FRONT, GL_AMBIENT, robotArm_mat_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, robotArm_mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, robotArm_mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, robotArm_mat_shininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, killerBeanArm_mat_ambient);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, killerBeanArm_mat_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, killerBeanArm_mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SHININESS, killerBeanArm_mat_shininess);
 
 	glPushMatrix();
-    
-	/*
-	// Position arm with respect to parent body
-	glTranslatef(0.5*robotBodyWidth + 0.5*upperArmWidth, 0, 0.0); // this will be done last
 
-	// build arm
-	glPushMatrix();
-	glScalef(upperArmWidth, upperArmLength, upperArmWidth);
-	glutSolidCube(1.0);
-	glPopMatrix();*/
-
-	//glTranslatef(-robotBodyWidth / 2.0f - upperArmWidth / 2.0f, robotBodyLength / 2.0f, 0.0f);
 	glTranslatef(0.5 * robotBodyWidth + 0.5 * upperArmWidth, robotBodyLength/4.0f, 0.0);
 	glRotatef(shoulderAngle, 1.0, 0.0, 0.0);
 
@@ -416,10 +359,10 @@ void drawLeftArm()
 
 void drawRightArm()
 {
-	glMaterialfv(GL_FRONT, GL_AMBIENT, robotArm_mat_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, robotArm_mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, robotArm_mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, robotArm_mat_shininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, killerBeanArm_mat_ambient);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, killerBeanArm_mat_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, killerBeanArm_mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SHININESS, killerBeanArm_mat_shininess);
 
 	glPushMatrix();
 
@@ -526,7 +469,6 @@ void keyboard(unsigned char key, int x, int y)
 		shoulders = true;
 		hip = false;
 		knees = false;
-		//shoulderAngle += 2.0;
 		break;
 	case 'k':
 		shoulders = false;
@@ -563,7 +505,7 @@ void gunSpinnerHandler(int param) {
 	}
 }
 
-void walkAnimationHandler(int param) //for walking animation (1 leg step?)
+void walkAnimationHandler(int param) //for walking animation
 {
 	if (!stop)
 	{
@@ -620,12 +562,6 @@ void functionKeys(int key, int x, int y)
 			kneeRAngle += sign * rotationSpeed;
 		}
 	}
-
-	// Do transformations with arrow keys
-	//else if (...)   // GLUT_KEY_DOWN, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_LEFT
-	//{
-	//}
-
 	glutPostRedisplay();   // Trigger a window redisplay
 }
 
