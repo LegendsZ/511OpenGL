@@ -56,10 +56,14 @@ float robotAngle = 0.0;
 
 // Control rotations
 float shoulderAngle = -40.0;
-float gunAngle = -25.0;
-float hipAngle = 90.0f;
-float kneeAngle = 0.0f;
+float gunAngle = 0.0f;
+float hipLAngle = 90.0f;
+float hipRAngle = 90.0f;
+float kneeLAngle = 0.0f;
+float kneeRAngle = 0.0f;
 float rotationSpeed = 2.0;
+bool firstStep = true;
+bool leftLegWalk = true;
 
 // Lighting/shading and material properties for robot - upcoming lecture - just copy for now
 // Robot RGBA material properties (NOTE: we will learn about this later in the semester)
@@ -116,7 +120,7 @@ void mouse(int button, int state, int x, int y);
 void mouseMotionHandler(int xMouse, int yMouse);
 void keyboard(unsigned char key, int x, int y);
 void functionKeys(int key, int x, int y);
-void animationHandler(int param);
+void walkAnimationHandler(int param);
 void drawRobot();
 void drawBody();
 void drawLowerBody();
@@ -125,8 +129,8 @@ void drawRightArm();
 void gunSpinnerHandler(int param);
 void printVECTOR3D(VECTOR3D* in);
 void cleanUp();
-void drawUpperLeg();
-void drawLowerLeg();
+void drawUpperLeg(bool left);
+void drawLowerLeg(bool left);
 
 int main(int argc, char **argv)
 {
@@ -305,10 +309,10 @@ void drawBody()
 	glPopMatrix();
 }
 
-void drawUpperLeg() {
+void drawUpperLeg(bool left) {
 	//glPushMatrix();
 	//glScalef(legWidth, legLength, legWidth);
-	glRotatef(hipAngle, 1.0, 0.0, 0.0);
+	glRotatef(left ? hipLAngle : hipRAngle, 1.0, 0.0, 0.0);
 	//glRotatef(90, 1.0, 0.0, 0.0);
 	// Draw cylinder for the upper leg
 	GLUquadric* quad = gluNewQuadric();
@@ -318,10 +322,10 @@ void drawUpperLeg() {
 	//glPopMatrix();
 }
 
-void drawLowerLeg() {
+void drawLowerLeg(bool left) {
 	//glPushMatrix();
 	//glScalef(legWidth, legLength, legWidth);
-	glRotatef(kneeAngle, 1.0, 0.0, 0.0);
+	glRotatef(left ? kneeLAngle : kneeRAngle, 1.0, 0.0, 0.0);
 	//glRotatef(90, 1.0, 0.0, 0.0);
 	// Draw cylinder for the lower leg
 	GLUquadric* quad = gluNewQuadric();
@@ -342,18 +346,18 @@ void drawLowerBody()
 	glPushMatrix();
 	glTranslatef(-(0.3 * robotBodyWidth), -robotBodyLength / 2, 0.0); // this will be done last
 	//glTranslatef(-robotBodyWidth / 4.0f, -robotBodyDepth / 2.0f, 0.0f); // Position left leg
-	drawUpperLeg(); // Draw upper leg
+	drawUpperLeg(false); // Draw upper leg
 	glTranslatef(0.0f,0.0f, legLength / 2); // Move down for lower leg
-	drawLowerLeg(); // Draw lower leg
+	drawLowerLeg(false); // Draw lower leg
 	glPopMatrix();
 
 	//code for leftleg
 	glPushMatrix();
 	glTranslatef(+(0.3 * robotBodyWidth), -robotBodyLength / 2, 0.0); // this will be done last
 	//glTranslatef(robotBodyWidth / 4.0f, -robotBodyDepth / 2.0f, 0.0f); // Position right leg
-	drawUpperLeg(); // Draw upper leg
+	drawUpperLeg(true); // Draw upper leg
 	glTranslatef(0.0f, 0.0f, legLength / 2); // Move down for lower leg
-	drawLowerLeg(); // Draw lower leg
+	drawLowerLeg(true); // Draw lower leg
 	glPopMatrix();
 
 	/*glPushMatrix();
@@ -483,7 +487,7 @@ void keyboard(unsigned char key, int x, int y)
 
 	switch (key)
 	{
-	case 'w':
+	case 'x':
 		*Camera::camera->eye += forward * speed;
 		*Camera::camera->center += forward * speed;
 		break;
@@ -499,9 +503,24 @@ void keyboard(unsigned char key, int x, int y)
 		*Camera::camera->eye += right * speed;
 		*Camera::camera->center += right * speed;
 		break;
-	case 'q': // Move up?
+	case 'w':
+		glutTimerFunc(10, walkAnimationHandler, 0);
+		stop = false;
 		break;
-	case 'e': // Move down?
+	case 'W':
+		stop = true;
+		break;
+	case 'E':
+		//reset all angles
+		robotAngle = 0.0;
+		shoulderAngle = -40.0;
+		hipLAngle = 90.0f;
+		hipRAngle = 90.0f;
+		kneeLAngle = 0.0f;
+		kneeRAngle = 0.0f;
+		firstStep = true;
+		leftLegWalk = true;
+		glutPostRedisplay();
 		break;
 	case 'j':
 		shoulders = true;
@@ -532,12 +551,6 @@ void keyboard(unsigned char key, int x, int y)
 	case 'C':
 		gunSpinStop = true;
 		break;
-	case 'x':
-		
-		break;
-	case 'X':
-		
-		break;
 	}
 	glutPostRedisplay();   // Trigger a window redisplay
 }
@@ -550,13 +563,36 @@ void gunSpinnerHandler(int param) {
 	}
 }
 
-void animationHandler(int param) //for walking animation (1 leg step?)
+void walkAnimationHandler(int param) //for walking animation (1 leg step?)
 {
 	if (!stop)
 	{
-		shoulderAngle += 1.0;
+		if (leftLegWalk) {
+			hipLAngle -= 1.0;
+			kneeLAngle += 1.0;
+			if (!firstStep) {
+				hipRAngle += 1.0;
+				kneeRAngle -= 1.0;
+			}
+			if (hipLAngle < 45.0) {
+				firstStep = false;
+				leftLegWalk = false;
+			}
+		}
+		else {
+			hipRAngle -= 1.0;
+			kneeRAngle += 1.0;
+			if (!firstStep) {
+				hipLAngle += 1.0;
+				kneeLAngle -= 1.0;
+			}
+			if (hipRAngle < 45.0) {
+				firstStep = false;
+				leftLegWalk = true;
+			}
+		}
 		glutPostRedisplay();
-		glutTimerFunc(10, animationHandler, 0);
+		glutTimerFunc(10, walkAnimationHandler, 0);
 	}
 }
 
@@ -576,10 +612,12 @@ void functionKeys(int key, int x, int y)
 			shoulderAngle += sign * rotationSpeed;
 		}
 		else if (hip) {
-			hipAngle += sign * rotationSpeed;
+			hipLAngle += sign * rotationSpeed;
+			hipRAngle += sign * rotationSpeed;
 		}
 		else if (knees) {
-			kneeAngle += sign * rotationSpeed;
+			kneeLAngle += sign * rotationSpeed;
+			kneeRAngle += sign * rotationSpeed;
 		}
 	}
 

@@ -9,8 +9,11 @@ the 511OpenGL.exe application can be found, make sure freeglut.dll is included i
 
 Information about controls:
 SPECIAL FEATURE: dynamic 3d camera
-w a s d keyboard inputs control moving in the 3d space and holding left click with mouse and moving mouse will control yaw/pitch (rotation) of camera
-
+x=forward
+a=left
+s=backwards
+d=right
+x a s d keyboard inputs control moving in the 3d space and holding left click with mouse and moving mouse will control yaw/pitch (rotation) of camera
 up/down arrow keyboard inputs control angle of joints after selected (see below for which keys control which joint)
 
 Controls for spinning:
@@ -19,5 +22,8 @@ Controls for spinning:
 'k' selects knee angle to be controlled
 'h' selects hip angle to be controlled
 'j' selects shoulder angle to be controlled
+'w' starts walking animation.
+'W' stops walking animation.
 
 Special notes:
+'E' resets all angles, and values. (resets entire state)

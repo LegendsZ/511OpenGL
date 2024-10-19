@@ -8,12 +8,12 @@ C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(33,1
 C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(34,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(36,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(38,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(204,18): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(343,15): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(352,15): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(401,36): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(635,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(636,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(208,18): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(347,15): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(356,15): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(405,36): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(673,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\511OpenGL\Robot3D.cpp(674,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   511OpenGL.vcxproj -> C:\Users\WINDOWS\Documents\GitHub\511OpenGL\511OpenGL\x64\Debug\511OpenGL.exe
   'pwsh.exe' is not recognized as an internal or external command,
   operable program or batch file.
