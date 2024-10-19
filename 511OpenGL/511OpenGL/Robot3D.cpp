@@ -1,43 +1,41 @@
 /*******************************************************************
-		   Killer Bean
+           KB
 ********************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <gl/glut.h>
+#include <GL/glut.h> // Changed <gl/glut.h> to <GL/glut.h> for better portability
 #include <utility>
 #include <vector>
 #include "VECTOR3D.h"
 #include "QuadMesh.h"
 #include "Camera.h"
 
+const int vWidth = 650;    // Viewport width in pixels
+const int vHeight = 500;   // Viewport height in pixels
 
-const int vWidth  = 650;    // Viewport width in pixels
-const int vHeight = 500;    // Viewport height in pixels
-
-// Note how everything depends on robot body dimensions so that can scale entire robot proportionately
-// just by changing robot body scale
+// Robot body dimensions (adjustable)
 float robotBodyWidth = 8.0;
 float robotBodyLength = 10.0;
 float robotBodyDepth = 6.0;
-float headWidth = 0.4*robotBodyWidth;
+float headWidth = 0.4 * robotBodyWidth;
 float headLength = headWidth;
 float headDepth = headWidth;
 float eyeRadius = 0.1 * headWidth;
-float upperArmLength = robotBodyLength*0.75;
-float upperArmWidth = 0.125*robotBodyWidth;
-float gunLength = upperArmLength / 4.0;
-float gunWidth = upperArmWidth;
-float gunDepth = upperArmWidth;
+float upperArmLength = robotBodyLength * 0.75;
+float upperArmWidth = 0.125 * robotBodyWidth;
+float nugLength = upperArmLength / 4.0;
+float nugWidth = upperArmWidth;
+float nugDepth = upperArmWidth;
 float legLength = robotBodyLength * 1.0;
 float legWidth = 0.2 * robotBodyWidth;
 float stanchionLength = robotBodyLength;
-float stanchionRadius = 0.1*robotBodyDepth;
+float stanchionRadius = 0.1 * robotBodyDepth;
 float baseWidth = 2 * robotBodyWidth;
-float baseLength = 0.25*stanchionLength;
+float baseLength = 0.25 * stanchionLength;
 
-//camera vars
+// Camera vars
 bool firstTimeMouseMovement = true;
 int previousX = 0;
 int previousY = 0;
@@ -45,62 +43,52 @@ float yaw = 0.0;
 float pitch = 0.0;
 VECTOR3D rotateAngle = VECTOR3D(0.0, 0.0, 0.0);
 
-//joints control
+// Joint control
 bool shoulders = false;
 bool hip = false;
 bool knees = false;
-bool gunSpinStop = false;
+bool nugSpinStop = false;
 
 // Control Robot body rotation on base
 float robotAngle = 0.0;
 
 // Control arm rotation
 float shoulderAngle = -40.0;
-float gunAngle = -25.0;
+float nugAngle = -25.0;
 
-// Lighting/shading and material properties for robot - upcoming lecture - just copy for now
-// Robot RGBA material properties (NOTE: we will learn about this later in the semester)
-GLfloat robotBody_mat_ambient[] = { 0.0f,0.0f,0.0f,0.0f };
-GLfloat robotBody_mat_specular[] = { 0.0f,0.0f,0.0f,0.0f };
-GLfloat robotBody_mat_diffuse[] = { 0.7f,0.42f,0.0f,1.0f };
-GLfloat robotBody_mat_shininess[] = { 10.0F };
+// Lighting/shading and material properties
+GLfloat robotBody_mat_ambient[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+GLfloat robotBody_mat_specular[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+GLfloat robotBody_mat_diffuse[] = { 0.7f, 0.42f, 0.0f, 1.0f };
+GLfloat robotBody_mat_shininess[] = { 10.0f };
 
+GLfloat robotArm_mat_ambient[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+GLfloat robotArm_mat_specular[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+GLfloat robotArm_mat_diffuse[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+GLfloat robotArm_mat_shininess[] = { 32.0f };
 
-GLfloat robotArm_mat_ambient[] = { 0.0f,0.0f,0.0f,0.0f };
-GLfloat robotArm_mat_specular[] = { 0.0f,0.0f,0.0f,0.0f };
-GLfloat robotArm_mat_diffuse[] = { 0.0f,0.0f,0.0f,1.0f };
-GLfloat robotArm_mat_shininess[] = { 32.0F };
-
-GLfloat gun_mat_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-GLfloat gun_mat_diffuse[] = { 1.0f,0.6f,0.2f,0.01f };
-GLfloat gun_mat_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-GLfloat gun_mat_shininess[] = { 100.0F };
+GLfloat nug_mat_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+GLfloat nug_mat_diffuse[] = { 1.0f, 0.6f, 0.2f, 0.01f };
+GLfloat nug_mat_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+GLfloat nug_mat_shininess[] = { 100.0f };
 
 GLfloat robotLowerBody_mat_ambient[] = { 0.25f, 0.25f, 0.25f, 1.0f };
 GLfloat robotLowerBody_mat_specular[] = { 0.774597f, 0.774597f, 0.774597f, 1.0f };
 GLfloat robotLowerBody_mat_diffuse[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-GLfloat robotLowerBody_mat_shininess[] = { 76.8F };
-
+GLfloat robotLowerBody_mat_shininess[] = { 76.8f };
 
 // Light properties
-GLfloat light_position0[] = { -4.0F, 8.0F, 8.0F, 1.0F };
-GLfloat light_position1[] = { 4.0F, 8.0F, 8.0F, 1.0F };
+GLfloat light_position0[] = { -4.0f, 8.0f, 8.0f, 1.0f };
+GLfloat light_position1[] = { 4.0f, 8.0f, 8.0f, 1.0f };
 GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-GLfloat light_ambient[] = { 0.2F, 0.2F, 0.2F, 1.0F };
-
+GLfloat light_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
 // Mouse button
 int currentButton;
 
 // A flat open mesh
-QuadMesh *groundMesh = NULL;
-
-// Structure defining a bounding box, currently unused
-typedef struct BoundingBox {
-    VECTOR3D min;
-	VECTOR3D max;
-} BBox;
+QuadMesh* groundMesh = NULL;
 
 // Default Mesh Size
 int meshSize = 16;
@@ -117,514 +105,382 @@ void animationHandler(int param);
 void drawRobot();
 void drawBody();
 void drawLowerBody();
+void drawFoot();
 void drawLeftArm();
 void drawRightArm();
-void gunSpinnerHandler(int param);
+void nugSpinnerHandler(int param);
 void printVECTOR3D(VECTOR3D* in);
+void drawUpperLeg();
+void drawLowerLeg();
+void drawLegWithJoints();
 
-int main(int argc, char **argv)
-{
-	// Initialize GLUT
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(vWidth, vHeight);
-	glutInitWindowPosition(200, 30);
-	glutCreateWindow("3D Hierarchical Example");
-
-	// Initialize GL
-	initOpenGL(vWidth, vHeight);
-
-	// Register callback functions
-	glutDisplayFunc(display);
-	glutReshapeFunc(reshape);
-	glutMouseFunc(mouse);
-	glutMotionFunc(mouseMotionHandler);
-	glutKeyboardFunc(keyboard);
-	glutSpecialFunc(functionKeys);
-
-	// Start event loop, never returns
-	glutMainLoop();
-
-	return 0;
+// Clean up allocated resources
+void cleanUp() {
+    delete groundMesh; // Freeing the allocated ground mesh
 }
 
+int main(int argc, char** argv)
+{
+    // Initialize GLUT
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(vWidth, vHeight);
+    glutInitWindowPosition(200, 30);
+    glutCreateWindow("3D Hierarchical Example");
+
+    // Initialize GL
+    initOpenGL(vWidth, vHeight);
+
+    // Register callback functions
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutMouseFunc(mouse);
+    glutMotionFunc(mouseMotionHandler);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(functionKeys);
+
+    // Start animation loop
+    glutTimerFunc(0, animationHandler, 0); // Start animation handler
+
+    // Start event loop, never returns
+    glutMainLoop();
+
+    cleanUp(); // Cleanup before exit (although this may never be called)
+    return 0;
+}
 
 // Set up OpenGL. For viewport and projection setup see reshape(). 
 void initOpenGL(int w, int h)
 {
-	// Set up and enable lighting
-	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+    // Set up and enable lighting
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
 
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
-	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-	
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);   // This second light is currently off
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
 
-	// Other OpenGL setup
-	glEnable(GL_DEPTH_TEST);   // Remove hidded surfaces
-	glShadeModel(GL_SMOOTH);   // Use smooth shading, makes boundaries between polygons harder to see 
-	glClearColor(0.4F, 0.4F, 0.4F, 0.0F);  // Color and depth for glClear
-	glClearDepth(1.0f);
-	glEnable(GL_NORMALIZE);    // Renormalize normal vectors 
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);   // Nicer perspective
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);   // This second light is currently off
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+    // Other OpenGL setup
+    glEnable(GL_DEPTH_TEST);   // Remove hidden surfaces
+    glShadeModel(GL_SMOOTH);   // Use smooth shading
+    glClearColor(0.4f, 0.4f, 0.4f, 0.0f);  // Color and depth for glClear
+    glClearDepth(1.0f);
+    glEnable(GL_NORMALIZE);    // Renormalize normal vectors 
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);   // Nicer perspective
 
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-	// Other initializatuion
-	// Set up ground quad mesh
-	VECTOR3D origin = VECTOR3D(-16.0f, 0.0f, 16.0f);
-	VECTOR3D dir1v = VECTOR3D(1.0f, 0.0f, 0.0f);
-	VECTOR3D dir2v = VECTOR3D(0.0f, 0.0f, -1.0f);
-	groundMesh = new QuadMesh(meshSize, 32.0);
-	groundMesh->InitMesh(meshSize, origin, 32.0, 32.0, dir1v, dir2v);
-
-	VECTOR3D ambient = VECTOR3D(0.0f, 0.05f, 0.0f);
-	VECTOR3D diffuse = VECTOR3D(0.4f, 0.8f, 0.4f);
-	VECTOR3D specular = VECTOR3D(0.04f, 0.04f, 0.04f);
-	float shininess = 0.2;
-	groundMesh->SetMaterial(ambient, diffuse, specular, shininess);
-
-	VECTOR3D* eye = new VECTOR3D(0.0f, 6.0f, 22.0f);
-	VECTOR3D* center = new VECTOR3D(0.0f, 0.0f, -1.0f);
-	VECTOR3D* up = new VECTOR3D(0.0f, 1.0f, 0.0f);
-
-	Camera::makeCamera(eye, center, up);
+    // Set up ground quad mesh
+    VECTOR3D origin = VECTOR3D(0.0, 0.0, 0.0);
+    groundMesh = new QuadMesh(&origin, meshSize); // Initialize QuadMesh
 }
 
-
-// Callback, called whenever GLUT determines that the window should be redisplayed
-// or glutPostRedisplay() has been called.
 void display(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // Clear buffers
 
-	glLoadIdentity();
-	// Create Viewing Matrix V
-	// Set up the camera at position (0, 6, 22) looking at the origin, up along positive y axis
-	Camera::camera->look();
-	//printVECTOR3D(Camera::camera->center);
-	//gluLookAt(0.0, 6.0, 22.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    glLoadIdentity();
+    glTranslatef(0.0f, -0.5f, -25.0f); // Translate camera
 
-	// Draw Robot
+    // Draw the ground plane
+    groundMesh->Draw(); // Ensure Draw method is defined correctly in QuadMesh
 
-	// Apply modelling transformations M to move robot
-	// Current transformation matrix is set to IV, where I is identity matrix
-	// CTM = IV
-	drawRobot();
+    // Draw the robot
+    drawRobot(); // Draw robot function
 
-	// Draw ground
-	glPushMatrix();
-	glTranslatef(0.0, -20.0, 0.0);
-	groundMesh->DrawMesh(meshSize);
-	glPopMatrix();
+    // Swap buffers for double buffering
+    glutSwapBuffers();
+}
 
-	glutSwapBuffers();   // Double buffering, swap buffers
+void reshape(int w, int h)
+{
+    glViewport(0, 0, w, h);   // Set the viewport
+    glMatrixMode(GL_PROJECTION);  // Switch to projection matrix
+    glLoadIdentity();          // Load identity matrix
+    gluPerspective(60.0f, (float)w / (float)h, 1.0f, 1000.0f); // Set perspective
+    glMatrixMode(GL_MODELVIEW); // Switch back to modelview
+}
+
+// Function for handling mouse button events
+void mouse(int button, int state, int x, int y)
+{
+    if (state == GLUT_DOWN) {
+        currentButton = button; // Track which button is pressed
+    }
+}
+
+// Function for handling mouse movement
+void mouseMotionHandler(int xMouse, int yMouse)
+{
+    if (currentButton == GLUT_LEFT_BUTTON) {
+        // Control camera rotation with left mouse button
+        if (firstTimeMouseMovement) {
+            previousX = xMouse;
+            previousY = yMouse;
+            firstTimeMouseMovement = false;
+        }
+        else {
+            yaw += (xMouse - previousX) * 0.1;  // Update yaw
+            pitch -= (yMouse - previousY) * 0.1; // Update pitch
+            previousX = xMouse;  // Update previous mouse position
+            previousY = yMouse;
+        }
+        glutPostRedisplay(); // Request to redraw the scene
+    }
+    else {
+        firstTimeMouseMovement = true; // Reset if not moving
+    }
+}
+
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key) {
+    case 's':
+        shoulders = !shoulders; // Toggle shoulder movement
+        break;
+    case 'h':
+        hip = !hip; // Toggle hip movement
+        break;
+    case 'k':
+        knees = !knees; // Toggle knee movement
+        break;
+    case 'n':
+        nugSpinStop = !nugSpinStop; // Toggle nug spinner
+        break;
+    case 27: // Escape key
+        exit(0); // Exit the application
+        break;
+    default:
+        break;
+    }
+    glutPostRedisplay(); // Request to redraw the scene
+}
+
+void functionKeys(int key, int x, int y)
+{
+    switch (key) {
+    case GLUT_KEY_UP:
+        robotAngle += 5.0; // Rotate robot base
+        break;
+    case GLUT_KEY_DOWN:
+        robotAngle -= 5.0; // Rotate robot base
+        break;
+    case GLUT_KEY_LEFT:
+        nugAngle += 5.0; // Adjust nug angle
+        break;
+    case GLUT_KEY_RIGHT:
+        nugAngle -= 5.0; // Adjust nug angle
+        break;
+    default:
+        break;
+    }
+    glutPostRedisplay(); // Request to redraw the scene
+}
+
+// Function for animation loop
+void animationHandler(int param)
+{
+    // Update robot angle based on toggles
+    if (shoulders) {
+        shoulderAngle += 2.0; // Adjust shoulder angle for animation
+    }
+    if (hip) {
+        // Implement hip rotation logic
+    }
+    if (knees) {
+        // Implement knee rotation logic
+    }
+    if (!nugSpinStop) {
+        nugAngle += 5.0; // Spin the nug continuously
+    }
+    glutPostRedisplay(); // Request to redraw the scene
+    glutTimerFunc(1000 / 60, animationHandler, 0); // Call function 60 times a second
 }
 
 void drawRobot()
 {
-	glPushMatrix();
-	 // spin robot on base. 
-	glRotatef(robotAngle, 0.0, 1.0, 0.0);
-
-	drawBody();
-	drawLeftArm();
-	drawRightArm();
-	
-	drawLowerBody();
-
-	glPopMatrix();
+    glPushMatrix();
+    glRotatef(robotAngle, 0.0f, 1.0f, 0.0f); // Rotate robot base
+    drawBody(); // Draw robot body
+    glPopMatrix();
 }
 
-
+// Function to draw the robot's body
 void drawBody()
 {
-	glMaterialfv(GL_FRONT, GL_AMBIENT, robotBody_mat_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, robotBody_mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, robotBody_mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, robotBody_mat_shininess);
+    glPushMatrix();
 
-	glPushMatrix();
-	glScalef(robotBodyWidth, robotBodyLength, robotBodyDepth);
+    // Set material properties for the robot's body
+    glMaterialfv(GL_FRONT, GL_AMBIENT, robotBody_mat_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, robotBody_mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, robotBody_mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, robotBody_mat_shininess);
 
-	// scale to make egg/bean shape
-	glScalef(0.6f, .8f, 0.6f);
-	// solid sphere
-	glutSolidSphere(1.0, 50, 50);
+    glTranslatef(0.0f, 1.5f, 0.0f); // Move body up
+    glScalef(robotBodyWidth, robotBodyDepth, robotBodyLength); // Scale to body dimensions
+    glutSolidCube(1.0); // Draw body
+    glPopMatrix();
 
-	glPushMatrix();
-	//draw eyes
-	glTranslatef(-0.4f, 0.6f, 0.75f);
-	glRotatef(90, 0.0, 0.0, 1.0);
-	glScalef(0.25f, 0.6f, 0.4f); // scale to make an oval shape
-	GLfloat eyes[] = { 1.0f, 1.0f, 1.0f, 1.0f }; //white
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, eyes);
-	glutSolidSphere(eyeRadius, 20, 20);
+    // Draw head
+    glPushMatrix();
+    glTranslatef(0.0f, robotBodyDepth + headDepth / 2.0f, 0.0f);
+    glScalef(headWidth, headDepth, headLength);
+    glutSolidCube(1.0);
+    glPopMatrix();
 
-	glTranslatef(0.0f,-1.4f, 0.0f);
-	glutSolidSphere(eyeRadius, 20, 20);
-	glPopMatrix();
+    // Draw arms
+    drawLeftArm();
+    drawRightArm();
 
-
-	// draw jacket
-	GLfloat jacket[] = { 0.7f,0.0f,0.0f,1.0f };
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, jacket);
-	glTranslatef(0.0f, 0.0f, 0.0f);
-	glScalef(1.0f, .7f, 1.0f);
-	glutSolidSphere(1.1, 10, 10);
-
-	//draw belt
-	GLfloat belt[] = { 0.0f,0.0f,0.0f,1.0f };
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, belt);
-	glTranslatef(0.0f, -0.55f, 0.0f);
-	glScalef(0.9f, .1f, 1.0f);
-	glutSolidSphere(1.1, 10, 10);
-
-	// draw belt buckle
-	GLfloat buckle[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, buckle);
-	glPushMatrix();
-	glTranslatef(0.0f, 0.0f, 1.05f); // position the buckle on the center of the belt
-	glScalef(0.25f, 0.65f, 0.05f); // scale to make an oval shape
-	glutSolidSphere(1.0, 20, 20);
-	glPopMatrix();
-
-	glPopMatrix();
+    // Draw legs
+    drawLowerBody(); // Lower body includes legs
 }
 
 void drawLowerBody()
 {
-	glMaterialfv(GL_FRONT, GL_AMBIENT, robotLowerBody_mat_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, robotLowerBody_mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, robotLowerBody_mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, robotLowerBody_mat_shininess);
+    glPushMatrix();
+    glTranslatef(0.0f, -0.5f * robotBodyDepth, 0.0f); // Move down
+    glScalef(robotBodyWidth, robotBodyDepth, robotBodyLength);
+    glutSolidCube(1.0); // Draw lower body
+    glPopMatrix();
 
-	glPushMatrix();
+    drawLeftLeg(); // Call to draw left leg
+    drawRightLeg(); // Call to draw right leg
+}
 
-	glTranslatef(-(0.3 * robotBodyWidth), -robotBodyLength/2, 0.0); // this will be done last
-	//glTranslatef(0.5 * robotBodyWidth + 0.5 * upperArmWidth, robotBodyLength / 4.0f, 0.0);
-	glRotatef(90, 1.0, 0.0, 0.0);
-	// Draw cylinder for the leg
-	GLUquadric* quad = gluNewQuadric();
-	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength/2, 20, 20);
-	gluDeleteQuadric(quad);
-
-	//glTranslatef(0, -legLength / 2, 5.0); // this will be done last
-	glTranslatef(legLength / 2,0, 0); // this will be done last
-	//glTranslatef(0.5 * robotBodyWidth + 0.5 * upperArmWidth, robotBodyLength / 4.0f, 0.0);
-	//glRotatef(90, 1.0, 0.0, 0.0);
-	// Draw cylinder for the leg
-	quad = gluNewQuadric();
-	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength / 2, 20, 20);
-	gluDeleteQuadric(quad);
-
-	glPopMatrix();
+void drawFoot()
+{
+    glPushMatrix();
+    glScalef(legWidth, 0.2f, legWidth);
+    glutSolidCube(1.0);
+    glPopMatrix();
 }
 
 void drawLeftArm()
 {
-	glMaterialfv(GL_FRONT, GL_AMBIENT, robotArm_mat_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, robotArm_mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, robotArm_mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, robotArm_mat_shininess);
+    glPushMatrix();
+    glTranslatef(-robotBodyWidth / 2.0f, 0.0f, 0.0f); // Position left arm
+    glRotatef(shoulderAngle, 1.0f, 0.0f, 0.0f); // Rotate at shoulder
+    glTranslatef(-upperArmLength / 2.0f, 0.0f, 0.0f); // Translate to shoulder joint
+    glScalef(upperArmWidth, upperArmWidth, upperArmLength);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, robotArm_mat_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, robotArm_mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, robotArm_mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, robotArm_mat_shininess);
+    glutSolidCube(1.0); // Draw upper arm
+    glPopMatrix();
 
-	glPushMatrix();
-    
-	/*
-	// Position arm with respect to parent body
-	glTranslatef(0.5*robotBodyWidth + 0.5*upperArmWidth, 0, 0.0); // this will be done last
-
-	// build arm
-	glPushMatrix();
-	glScalef(upperArmWidth, upperArmLength, upperArmWidth);
-	glutSolidCube(1.0);
-	glPopMatrix();*/
-
-	//glTranslatef(-robotBodyWidth / 2.0f - upperArmWidth / 2.0f, robotBodyLength / 2.0f, 0.0f);
-	glTranslatef(0.5 * robotBodyWidth + 0.5 * upperArmWidth, robotBodyLength/4.0f, 0.0);
-	glRotatef(shoulderAngle, 1.0, 0.0, 0.0);
-
-	// Draw cylinder for the arm
-    GLUquadric* quad = gluNewQuadric();
-    gluCylinder(quad, upperArmWidth / 2.0f, upperArmWidth / 2.0f, upperArmLength, 20, 20);
-    gluDeleteQuadric(quad);
-
-
-	glPopMatrix();
+    // Draw Nug
+    glPushMatrix();
+    glTranslatef(-upperArmLength, 0.0f, 0.0f); // Position nug
+    glRotatef(nugAngle, 0.0f, 1.0f, 0.0f); // Rotate nug
+    glScalef(nugWidth, nugDepth, nugLength);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, nug_mat_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, nug_mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, nug_mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, nug_mat_shininess);
+    glutSolidCube(1.0); // Draw nug
+    glPopMatrix();
 }
 
 void drawRightArm()
 {
-	glMaterialfv(GL_FRONT, GL_AMBIENT, robotArm_mat_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, robotArm_mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, robotArm_mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, robotArm_mat_shininess);
-
-	glPushMatrix();
-
-	/*
-	// Rotate arm at shoulder
-	glTranslatef(-(0.5*robotBodyWidth + 0.5*upperArmWidth), 0.5*upperArmLength, 0.0);
-	glRotatef(shoulderAngle, 1.0, 0.0, 0.0);
-	glTranslatef((0.5*robotBodyWidth + 0.5*upperArmWidth), -0.5*upperArmLength, 0.0);
-
-	// Position arm and gun with respect to parent body
-	glTranslatef(-(0.5*robotBodyWidth + 0.5*upperArmWidth), 0, 0.0);
-	
-	// build arm
-	glPushMatrix();
-	glScalef(upperArmWidth, upperArmLength, upperArmWidth);
-	glutSolidCube(1.0);
-	glPopMatrix();*/
-
-	// Mirror the translation for the right arm
-	glTranslatef(-(robotBodyWidth / 2.0f + upperArmWidth / 2.0f), robotBodyLength / 4.0f, 0.0f);
-	glRotatef(shoulderAngle, 1.0, 0.0, 0.0);
-
-	// Draw cylinder for the arm
-
-	GLUquadric* quad = gluNewQuadric();
-	gluCylinder(quad, upperArmWidth / 2.0f, upperArmWidth / 2.0f, upperArmLength, 20, 20);
-	gluDeleteQuadric(quad);
-
-	//  Gun
-	glMaterialfv(GL_FRONT, GL_AMBIENT, gun_mat_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, gun_mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, gun_mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, gun_mat_shininess);
-
-	glPushMatrix();
-	// rotate gun
-	//glTranslatef(-(0.5*robotBodyWidth + 0.5*upperArmWidth), -(0.5*upperArmLength), 0.0);
-	glRotatef(gunAngle, 1.0, 0.0, 0.0);
-	//glTranslatef((0.5*robotBodyWidth + 0.5*upperArmWidth), (0.5*upperArmLength ), 0.0);
-	
-	// Position gun with respect to parent arm 
-	glTranslatef(0, 0, upperArmLength);
-
-	// build gun
-	glScalef(gunWidth, gunLength, gunDepth);
-	
-	quad = gluNewQuadric();
-	gluCylinder(quad, upperArmWidth / 2.0f, upperArmWidth / 2.0f, gunLength, 20, 20);
-	gluDeleteQuadric(quad);
-
-	glPopMatrix();
-	glPopMatrix();
+    glPushMatrix();
+    glTranslatef(robotBodyWidth / 2.0f, 0.0f, 0.0f); // Position right arm
+    glRotatef(shoulderAngle, 1.0f, 0.0f, 0.0f); // Rotate at shoulder
+    glTranslatef(upperArmLength / 2.0f, 0.0f, 0.0f); // Translate to shoulder joint
+    glScalef(upperArmWidth, upperArmWidth, upperArmLength);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, robotArm_mat_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, robotArm_mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, robotArm_mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, robotArm_mat_shininess);
+    glutSolidCube(1.0); // Draw upper arm
+    glPopMatrix();
 }
 
-// Callback, called at initialization and whenever user resizes the window.
-void reshape(int w, int h)
+void nugSpinnerHandler(int param)
 {
-	// Set up viewport, projection, then change to modelview matrix mode - 
-	// display function will then set up camera and do modeling transforms.
-	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(60.0, (GLdouble)w / h, 0.2, 40.0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	// Set up the camera at position (0, 6, 22) looking at the origin, up along positive y axis
-	gluLookAt(0.0, 6.0, 22.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    // Implement nug spinner logic here if needed
 }
 
-bool stop = false;
+void drawUpperLeg() {
+    glPushMatrix();
+    glScalef(legWidth, legLength, legWidth);
+    glutSolidCube(1.0); // Draw upper leg
+    glPopMatrix();
+}
 
-// Callback, handles input from the keyboard, non-arrow keys
-void keyboard(unsigned char key, int x, int y)
+void drawLowerLeg() {
+    glPushMatrix();
+    glScalef(legWidth, legLength, legWidth);
+    glutSolidCube(1.0); // Draw lower leg
+    glPopMatrix();
+}
+
+void drawLeftLeg() {
+    glPushMatrix();
+    glTranslatef(-robotBodyWidth / 4.0f, -robotBodyDepth / 2.0f, 0.0f); // Position left leg
+    drawUpperLeg(); // Draw upper leg
+    glTranslatef(0.0f, -legLength, 0.0f); // Move down for lower leg
+    drawLowerLeg(); // Draw lower leg
+    drawFoot(); // Draw foot
+    glPopMatrix();
+}
+
+void drawRightLeg() {
+    glPushMatrix();
+    glTranslatef(robotBodyWidth / 4.0f, -robotBodyDepth / 2.0f, 0.0f); // Position right leg
+    drawUpperLeg(); // Draw upper leg
+    glTranslatef(0.0f, -legLength, 0.0f); // Move down for lower leg
+    drawLowerLeg(); // Draw lower leg
+    drawFoot(); // Draw foot
+    glPopMatrix();
+}
+
+void initLighting() {
+    glEnable(GL_LIGHTING); // Enable lighting
+    glEnable(GL_LIGHT0); // Enable light source
+    GLfloat light_position[] = { 0.0, 10.0, 10.0, 1.0 }; // Light position
+    GLfloat light_ambient[] = { 0.2, 0.2, 0.2, 1.0 }; // Ambient light
+    GLfloat light_diffuse[] = { 0.8, 0.8, 0.8, 1.0 }; // Diffuse light
+    GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 }; // Specular light
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+    glEnable(GL_COLOR_MATERIAL); // Enable color material
+}
+
+int main(int argc, char** argv)
 {
-	VECTOR3D forward = (*(Camera::camera->center) - *(Camera::camera->eye)); // Direction the camera is facing
-	forward.Normalize();
-	VECTOR3D right = (forward.CrossProduct(*Camera::camera->up)); // Right direction
-	right.Normalize();
-	float speed = 0.1f;
+    glutInit(&argc, argv); // Initialize GLUT
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); // Set display mode
+    glutInitWindowSize(800, 600); // Set window size
+    glutCreateWindow("Robot Simulation"); // Create window
+    glEnable(GL_DEPTH_TEST); // Enable depth testing
 
-	switch (key)
-	{
-	case 'w':
-		*Camera::camera->eye += forward * speed;
-		*Camera::camera->center += forward * speed;
-		break;
-	case 's':
-		*Camera::camera->eye -= forward * speed;
-		*Camera::camera->center -= forward * speed;
-		break;
-	case 'a':
-		*Camera::camera->eye -= right * speed;
-		*Camera::camera->center -= right * speed;
-		break;
-	case 'd':
-		*Camera::camera->eye += right * speed;
-		*Camera::camera->center += right * speed;
-		break;
-	case 'q': // Move up?
-		break;
-	case 'e': // Move down?
-		break;
-	case 'j':
-		shoulders = true;
-		hip = false;
-		knees = false;
-		//shoulderAngle += 2.0;
-		break;
-	case 'k':
-		shoulders = false;
-		hip = false;
-		knees = true;
-		break;
-	case 'h':
-		shoulders = false;
-		hip = true;
-		knees = false;
-		break;
-	case 'r':
-		robotAngle += 2.0;
-		break;
-	case 'R':
-		robotAngle -= 2.0;
-		break;
-	case 'c':
-		glutTimerFunc(10, gunSpinnerHandler, 0);
-		gunSpinStop = false;
-		break;
-	case 'C':
-		gunSpinStop = true;
-		break;
-	case 'x':
-		
-		break;
-	case 'X':
-		
-		break;
-	}
-	glutPostRedisplay();   // Trigger a window redisplay
-}
+    initLighting(); // Initialize lighting
 
-void gunSpinnerHandler(int param) {
-	if (!gunSpinStop) {
-		gunAngle += 2.0;
-		glutPostRedisplay();
-		glutTimerFunc(10, gunSpinnerHandler, 0);
-	}
-}
+    // Set callback functions
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutMouseFunc(mouse);
+    glutMotionFunc(mouseMotionHandler);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(functionKeys);
+    glutTimerFunc(0, animationHandler, 0); // Set timer for animation
 
-void animationHandler(int param) //for walking animation (1 leg step?)
-{
-	if (!stop)
-	{
-		shoulderAngle += 1.0;
-		glutPostRedisplay();
-		glutTimerFunc(10, animationHandler, 0);
-	}
-}
+    // Initialize QuadMesh
+    initialize();
 
-
-
-// Callback, handles input from the keyboard, function and arrow keys
-void functionKeys(int key, int x, int y)
-{
-	// Help key
-	if (key == GLUT_KEY_F1)
-	{
-
-	}
-	else if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
-		int sign = (key == GLUT_KEY_DOWN) ? 1 : -1;
-		if (shoulders) {
-			shoulderAngle += sign * 2.0;
-		}
-		else if (hip) {
-			//hipAngle += sign * 2.0;
-		}
-		else if (knees) {
-			//kneeAngle += sign * 2.0;
-		}
-	}
-
-	// Do transformations with arrow keys
-	//else if (...)   // GLUT_KEY_DOWN, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_LEFT
-	//{
-	//}
-
-	glutPostRedisplay();   // Trigger a window redisplay
-}
-
-
-// Mouse button callback - use only if you want to 
-void mouse(int button, int state, int x, int y)
-{
-	currentButton = button;
-
-	switch (button)
-	{
-	case GLUT_LEFT_BUTTON:
-		if (state == GLUT_DOWN)
-		{
-			;
-
-		}
-		break;
-	case GLUT_RIGHT_BUTTON:
-		if (state == GLUT_DOWN)
-		{
-			;
-		}
-		break;
-	default:
-		break;
-	}
-	previousX = x;
-	previousY = y;
-	glutPostRedisplay();   // Trigger a window redisplay
-}
-
-
-// Mouse motion callback - use only if you want to 
-void mouseMotionHandler(int xMouse, int yMouse)
-{
-	if (currentButton == GLUT_LEFT_BUTTON)
-	{
-		if (firstTimeMouseMovement) {
-			previousX = xMouse;
-			previousY = yMouse;
-			firstTimeMouseMovement = false;
-			return;
-		}
-		float xoffset = (xMouse - previousX) * 0.05;
-		float yoffset = (previousY - yMouse) * 0.05;
-
-		previousX = xMouse;
-		previousY = yMouse;
-
-		yaw += xoffset;
-		pitch -= yoffset;
-
-		if (pitch > 89.0f)
-			pitch = 89.0f;
-		if (pitch < -89.0f)
-			pitch = -89.0f;
-
-		rotateAngle.x = cos(yaw) * cos(pitch);
-		rotateAngle.y = sin(pitch);
-		rotateAngle.z = sin(yaw) * cos(pitch);
-		rotateAngle.Normalize();
-		*Camera::camera->center = *Camera::camera->eye + rotateAngle;
-	}
-	glutPostRedisplay();   // Trigger a window redisplay
-}
-
-void printVECTOR3D(VECTOR3D* in) {
-	std::cout << in->x << " " << in->y << " " << in->z << std::endl;
+    glutMainLoop(); // Enter the main loop
+    return 0;
 }
