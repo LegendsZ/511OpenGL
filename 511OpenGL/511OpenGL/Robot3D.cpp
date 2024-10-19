@@ -54,9 +54,12 @@ bool gunSpinStop = false;
 // Control Robot body rotation on base
 float robotAngle = 0.0;
 
-// Control arm rotation
+// Control rotations
 float shoulderAngle = -40.0;
 float gunAngle = -25.0;
+float hipAngle = 90.0f;
+float kneeAngle = 0.0f;
+float rotationSpeed = 2.0;
 
 // Lighting/shading and material properties for robot - upcoming lecture - just copy for now
 // Robot RGBA material properties (NOTE: we will learn about this later in the semester)
@@ -122,6 +125,8 @@ void drawRightArm();
 void gunSpinnerHandler(int param);
 void printVECTOR3D(VECTOR3D* in);
 void cleanUp();
+void drawUpperLeg();
+void drawLowerLeg();
 
 int main(int argc, char **argv)
 {
@@ -300,6 +305,32 @@ void drawBody()
 	glPopMatrix();
 }
 
+void drawUpperLeg() {
+	//glPushMatrix();
+	//glScalef(legWidth, legLength, legWidth);
+	glRotatef(hipAngle, 1.0, 0.0, 0.0);
+	//glRotatef(90, 1.0, 0.0, 0.0);
+	// Draw cylinder for the upper leg
+	GLUquadric* quad = gluNewQuadric();
+	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength / 2, 20, 20);
+	gluDeleteQuadric(quad);
+	//glutSolidCube(1.0); // Draw upper leg
+	//glPopMatrix();
+}
+
+void drawLowerLeg() {
+	//glPushMatrix();
+	//glScalef(legWidth, legLength, legWidth);
+	glRotatef(kneeAngle, 1.0, 0.0, 0.0);
+	//glRotatef(90, 1.0, 0.0, 0.0);
+	// Draw cylinder for the lower leg
+	GLUquadric* quad = gluNewQuadric();
+	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength / 2, 20, 20);
+	gluDeleteQuadric(quad);
+	//glutSolidCube(1.0); // Draw lower leg
+	//glPopMatrix();
+}
+
 void drawLowerBody()
 {
 	glMaterialfv(GL_FRONT, GL_AMBIENT, robotLowerBody_mat_ambient);
@@ -307,7 +338,25 @@ void drawLowerBody()
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, robotLowerBody_mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_SHININESS, robotLowerBody_mat_shininess);
 
+	//code for rightleg
 	glPushMatrix();
+	glTranslatef(-(0.3 * robotBodyWidth), -robotBodyLength / 2, 0.0); // this will be done last
+	//glTranslatef(-robotBodyWidth / 4.0f, -robotBodyDepth / 2.0f, 0.0f); // Position left leg
+	drawUpperLeg(); // Draw upper leg
+	glTranslatef(0.0f,0.0f, legLength / 2); // Move down for lower leg
+	drawLowerLeg(); // Draw lower leg
+	glPopMatrix();
+
+	//code for leftleg
+	glPushMatrix();
+	glTranslatef(+(0.3 * robotBodyWidth), -robotBodyLength / 2, 0.0); // this will be done last
+	//glTranslatef(robotBodyWidth / 4.0f, -robotBodyDepth / 2.0f, 0.0f); // Position right leg
+	drawUpperLeg(); // Draw upper leg
+	glTranslatef(0.0f, 0.0f, legLength / 2); // Move down for lower leg
+	drawLowerLeg(); // Draw lower leg
+	glPopMatrix();
+
+	/*glPushMatrix();
 
 	glTranslatef(-(0.3 * robotBodyWidth), -robotBodyLength/2, 0.0); // this will be done last
 	//glTranslatef(0.5 * robotBodyWidth + 0.5 * upperArmWidth, robotBodyLength / 4.0f, 0.0);
@@ -326,7 +375,7 @@ void drawLowerBody()
 	gluCylinder(quad, legWidth / 2.0f, legWidth / 2.0f, legLength / 2, 20, 20);
 	gluDeleteQuadric(quad);
 
-	glPopMatrix();
+	glPopMatrix();*/
 }
 
 void drawLeftArm()
@@ -370,21 +419,6 @@ void drawRightArm()
 
 	glPushMatrix();
 
-	/*
-	// Rotate arm at shoulder
-	glTranslatef(-(0.5*robotBodyWidth + 0.5*upperArmWidth), 0.5*upperArmLength, 0.0);
-	glRotatef(shoulderAngle, 1.0, 0.0, 0.0);
-	glTranslatef((0.5*robotBodyWidth + 0.5*upperArmWidth), -0.5*upperArmLength, 0.0);
-
-	// Position arm and gun with respect to parent body
-	glTranslatef(-(0.5*robotBodyWidth + 0.5*upperArmWidth), 0, 0.0);
-	
-	// build arm
-	glPushMatrix();
-	glScalef(upperArmWidth, upperArmLength, upperArmWidth);
-	glutSolidCube(1.0);
-	glPopMatrix();*/
-
 	// Mirror the translation for the right arm
 	glTranslatef(-(robotBodyWidth / 2.0f + upperArmWidth / 2.0f), robotBodyLength / 4.0f, 0.0f);
 	glRotatef(shoulderAngle, 1.0, 0.0, 0.0);
@@ -403,10 +437,7 @@ void drawRightArm()
 
 	glPushMatrix();
 	// rotate gun
-	//glTranslatef(-(0.5*robotBodyWidth + 0.5*upperArmWidth), -(0.5*upperArmLength), 0.0);
 	glRotatef(gunAngle, 1.0, 0.0, 0.0);
-	//glTranslatef((0.5*robotBodyWidth + 0.5*upperArmWidth), (0.5*upperArmLength ), 0.0);
-	
 	// Position gun with respect to parent arm 
 	glTranslatef(0, 0, upperArmLength);
 
@@ -542,13 +573,13 @@ void functionKeys(int key, int x, int y)
 	else if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
 		int sign = (key == GLUT_KEY_DOWN) ? 1 : -1;
 		if (shoulders) {
-			shoulderAngle += sign * 2.0;
+			shoulderAngle += sign * rotationSpeed;
 		}
 		else if (hip) {
-			//hipAngle += sign * 2.0;
+			hipAngle += sign * rotationSpeed;
 		}
 		else if (knees) {
-			//kneeAngle += sign * 2.0;
+			kneeAngle += sign * rotationSpeed;
 		}
 	}
 

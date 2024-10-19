@@ -10,7 +10,8 @@ the 511OpenGL.exe application can be found, make sure freeglut.dll is included i
 Information about controls:
 SPECIAL FEATURE: dynamic 3d camera
 w a s d keyboard inputs control moving in the 3d space and holding left click with mouse and moving mouse will control yaw/pitch (rotation) of camera
-furthermore:
+
+up/down arrow keyboard inputs control angle of joints after selected (see below for which keys control which joint)
 
 Controls for spinning:
 'c' starts spinning the cannon along its own length.
