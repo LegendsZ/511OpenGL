@@ -384,7 +384,7 @@ void drawRightArm()
 
 	glPushMatrix();
 	// rotate gun
-	glRotatef(gunAngle, 1.0, 0.0, 0.0);
+	glRotatef(gunAngle, 0.0, 0.0, 1.0);
 	// Position gun with respect to parent arm 
 	glTranslatef(0, 0, upperArmLength);
 
